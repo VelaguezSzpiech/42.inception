@@ -11,11 +11,13 @@ BOOTSTRAP_USER="${SUDO_USER:-$USER}"
 
 if [ "$(id -u)" -eq 0 ]; then
     SUDO_CMD=""
-elif command -v sudo >/dev/null 2>&1; then
+elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
     SUDO_CMD="sudo"
 else
-    echo "This script needs root privileges or sudo." >&2
-    exit 1
+    echo "sudo not available or not configured — bootstrapping now..."
+    echo "Enter root password:"
+    su -c "apt-get install -y sudo && echo '${BOOTSTRAP_USER} ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/${BOOTSTRAP_USER} && chmod 440 /etc/sudoers.d/${BOOTSTRAP_USER}" root
+    SUDO_CMD="sudo"
 fi
 
 run_root() {
@@ -152,8 +154,30 @@ ensure_certificate() {
     fi
 }
 
+ensure_guest_additions() {
+    if lsmod | grep -q vboxguest; then
+        return
+    fi
+
+    run_root apt-get install -y -qq linux-headers-"$(uname -r)" build-essential dkms
+
+    if [ -b /dev/cdrom ]; then
+        local mnt="/mnt/vbox-ga"
+        run_root mkdir -p "${mnt}"
+        run_root mount /dev/cdrom "${mnt}" 2>/dev/null || true
+        if [ -f "${mnt}/VBoxLinuxAdditions.run" ]; then
+            run_root "${mnt}/VBoxLinuxAdditions.run" --nox11 || true
+            run_root umount "${mnt}" 2>/dev/null || true
+        fi
+    else
+        run_root apt-get install -y -qq virtualbox-guest-utils virtualbox-guest-x11 2>/dev/null || \
+            echo "Guest Additions ISO not mounted. Attach it in VirtualBox settings and re-run."
+    fi
+}
+
 main() {
     ensure_package_basics
+    ensure_guest_additions
     ensure_docker
     ensure_docker_group
     ensure_hosts_entry
