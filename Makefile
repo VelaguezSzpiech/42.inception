@@ -1,30 +1,34 @@
 DATA_DIR = /home/vszpiech/data
+DOCKER = ./scripts/docker_cmd.sh
 
 all: up
 
+bootstrap:
+	bash ./scripts/bootstrap_vm.sh
+
 up: $(DATA_DIR)/wordpress $(DATA_DIR)/mariadb
-	docker compose -f srcs/docker-compose.yml up -d --build
+	$(DOCKER) compose -f srcs/docker-compose.yml up -d --build
 
 $(DATA_DIR)/%:
 	mkdir -p $@
 
 down:
-	docker compose -f srcs/docker-compose.yml down
+	$(DOCKER) compose -f srcs/docker-compose.yml down
 
 stop:
-	docker compose -f srcs/docker-compose.yml stop
+	$(DOCKER) compose -f srcs/docker-compose.yml stop
 
 start:
-	docker compose -f srcs/docker-compose.yml start
+	$(DOCKER) compose -f srcs/docker-compose.yml start
 
 clean: down
-	docker system prune -af
+	$(DOCKER) system prune -af
 	sudo rm -rf $(DATA_DIR)/wordpress/* $(DATA_DIR)/mariadb/*
 
 fclean: clean
-	docker volume rm $$(docker volume ls -q) 2>/dev/null || true
+	VOLUMES="$$($(DOCKER) volume ls -q)"; [ -z "$$VOLUMES" ] || $(DOCKER) volume rm $$VOLUMES
 	sudo rm -rf $(DATA_DIR)
 
 re: fclean all
 
-.PHONY: all up down stop start clean fclean re
+.PHONY: all bootstrap up down stop start clean fclean re
