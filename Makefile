@@ -106,7 +106,7 @@ check:
 	@echo ""
 	@echo "=== Database: wp_comments ==="
 	@echo '> SELECT * FROM wp_comments'
-	@$(DOCKER) exec mariadb mysql -t -u wp_user -p"$(DB_PW)" wordpress_db -e "SELECT comment_ID AS ID, comment_parent AS Reply_To, comment_author AS Author, LEFT(comment_content, 60) AS Content, comment_date_gmt AS Date FROM wp_comments ORDER BY comment_ID;"
+	@$(DOCKER) exec mariadb mysql -t -u wp_user -p"$(DB_PW)" wordpress_db -e "SELECT comment_ID AS ID, comment_parent AS Re, comment_author AS Author, comment_author_email AS Email, comment_author_IP AS IP, LEFT(comment_content, 50) AS Content, comment_date_gmt AS Date FROM wp_comments ORDER BY comment_ID;"
 
 checkloop:
 	@echo "=== Forbidden patterns (should be empty) ==="
@@ -128,7 +128,7 @@ checktls:
 
 comments:
 	@echo "=== Database: wp_comments ==="
-	@$(DOCKER) exec mariadb mysql -t -u wp_user -p"$(DB_PW)" wordpress_db -e "SELECT comment_ID AS ID, comment_parent AS Reply_To, comment_author AS Author, LEFT(comment_content, 60) AS Content, comment_date_gmt AS Date FROM wp_comments ORDER BY comment_ID;"
+	@$(DOCKER) exec mariadb mysql -t -u wp_user -p"$(DB_PW)" wordpress_db -e "SELECT comment_ID AS ID, comment_parent AS Re, comment_author AS Author, comment_author_email AS Email, comment_author_IP AS IP, LEFT(comment_content, 50) AS Content, comment_date_gmt AS Date FROM wp_comments ORDER BY comment_ID;"
 
 usergen:
 	@echo "=== Generating comment threads ==="
