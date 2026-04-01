@@ -418,6 +418,12 @@ a:hover { opacity: 0.8; }
 }
 
 /* =================== COMMENTS =================== */
+.recent-comments {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--card-border);
+}
+
 .comments-section {
     margin-top: 2rem;
 }

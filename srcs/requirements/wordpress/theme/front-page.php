@@ -67,24 +67,16 @@
 <div class="section-dark">
     <div class="section">
         <h2>Leave a <span class="hl">Comment</span></h2>
-        <p class="section-sub">No login required</p>
-        <div class="card">
-            <?php
-            global $post;
-            if ($post && comments_open($post->ID)) {
-                comments_template();
-            } else {
-                // Fallback: show comments for the front page post
-                $front_id = get_option('page_on_front');
-                if ($front_id) {
-                    $GLOBALS['post'] = get_post($front_id);
-                    setup_postdata($GLOBALS['post']);
-                    comments_template();
-                    wp_reset_postdata();
-                }
-            }
-            ?>
-        </div>
+        <p class="section-sub">Name required, email optional</p>
+        <?php
+        $front_id = get_option('page_on_front');
+        if ($front_id) {
+            $GLOBALS['post'] = get_post($front_id);
+            setup_postdata($GLOBALS['post']);
+            comments_template();
+            wp_reset_postdata();
+        }
+        ?>
     </div>
 </div>
 

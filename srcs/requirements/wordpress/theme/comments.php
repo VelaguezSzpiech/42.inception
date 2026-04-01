@@ -1,13 +1,19 @@
 <?php if (post_password_required()) return; ?>
 
-<div class="comments-section card">
-    <?php if (have_comments()) : ?>
-        <h3 class="comments-title">
-            <?php
-            $count = get_comments_number();
-            printf(_n('%d Comment', '%d Comments', $count), $count);
-            ?>
-        </h3>
+<?php if (comments_open()) : ?>
+    <?php comment_form(array(
+        'title_reply'          => 'Post a Comment',
+        'label_submit'         => 'Post',
+        'comment_notes_before' => '',
+        'comment_notes_after'  => '',
+        'class_form'           => 'comment-form',
+        'class_submit'         => 'btn',
+    )); ?>
+<?php endif; ?>
+
+<?php if (have_comments()) : ?>
+    <div class="recent-comments">
+        <h3 class="comments-title">Recent Comments</h3>
         <ol class="comment-list">
             <?php wp_list_comments(array(
                 'style'       => 'ol',
@@ -21,21 +27,8 @@
                 <?php next_comments_link('Newer &rarr;'); ?>
             </nav>
         <?php endif; ?>
-    <?php endif; ?>
-
-    <?php if (comments_open()) : ?>
-        <?php comment_form(array(
-            'title_reply'          => 'Leave a Comment',
-            'label_submit'         => 'Post Comment',
-            'comment_notes_before' => '',
-            'comment_notes_after'  => '',
-            'class_form'           => 'comment-form',
-            'class_submit'         => 'btn',
-        )); ?>
-    <?php else : ?>
-        <p class="comments-closed">Comments are closed.</p>
-    <?php endif; ?>
-</div>
+    </div>
+<?php endif; ?>
 
 <?php
 function inception_comment($comment, $args, $depth) {
