@@ -50,3 +50,22 @@ function inception_admin_cleanup() {
     </style>';
 }
 add_action('admin_head', 'inception_admin_cleanup');
+
+// Allow guest comments without login, name, or email
+function inception_allow_guest_comments() {
+    update_option('comment_registration', 0);
+    update_option('require_name_email', 0);
+    update_option('comment_moderation', 0);
+    update_option('comment_previously_approved', 0);
+}
+add_action('after_setup_theme', 'inception_allow_guest_comments');
+
+// Ensure comments are open on the front page
+function inception_open_front_page_comments($open, $post_id) {
+    $front_id = get_option('page_on_front');
+    if ($front_id && $post_id == $front_id) {
+        return true;
+    }
+    return $open;
+}
+add_filter('comments_open', 'inception_open_front_page_comments', 10, 2);
