@@ -56,6 +56,9 @@ dbroot:
 	@echo "--- GRANTS FOR wp_user ---"
 	@$(DOCKER) exec mariadb mysql -t -u root -p"$(DB_ROOT_PW)" -e "SHOW GRANTS FOR 'wp_user'@'%';"
 
+containers:
+	@$(DOCKER) ps -a --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+
 check:
 	@echo "=== Containers ==="
 	@$(DOCKER) compose -f srcs/docker-compose.yml ps
@@ -85,4 +88,4 @@ check:
 	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_2 2>/dev/null | grep "Protocol  :" || true
 	@echo Q | openssl s_client -connect vszpiech.42.fr:443 -tls1_3 2>/dev/null | grep "Protocol  :" || true
 
-.PHONY: all bootstrap up down stop start clean fclean re dbuser dbroot check
+.PHONY: all bootstrap up down stop start clean fclean re dbuser dbroot containers check
