@@ -51,13 +51,22 @@ function inception_admin_cleanup() {
 }
 add_action('admin_head', 'inception_admin_cleanup');
 
-// Allow guest comments without login, name, or email
+// Allow guest comments: name required, email optional, no login needed
 function inception_allow_guest_comments() {
     update_option('comment_registration', 0);
     update_option('require_name_email', 0);
     update_option('comment_moderation', 0);
     update_option('comment_previously_approved', 0);
 }
+
+// Require name but not email
+function inception_require_comment_name($commentdata) {
+    if (empty($commentdata['comment_author'])) {
+        wp_die('Please enter your name.', 'Comment Error', array('back_link' => true));
+    }
+    return $commentdata;
+}
+add_filter('preprocess_comment', 'inception_require_comment_name');
 add_action('after_setup_theme', 'inception_allow_guest_comments');
 
 // Ensure comments are open on the front page
