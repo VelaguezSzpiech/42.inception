@@ -63,7 +63,7 @@ These files have `600` permissions and should never be committed to git.
 
 ```bash
 # View running containers
-make status
+make containers
 
 # Or directly:
 docker compose -f srcs/docker-compose.yml ps

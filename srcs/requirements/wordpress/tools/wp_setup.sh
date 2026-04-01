@@ -7,10 +7,12 @@ if [ -S /var/run/docker.sock ]; then
     usermod -aG dockersock www-data 2>/dev/null || true
 fi
 
+# Load passwords from Docker secrets
 DB_PASSWORD=$(cat /run/secrets/db_password)
 WP_ADMIN_PASSWORD=$(tail -1 /run/secrets/credentials)
 WP_ADMIN_USER_FROM_SECRET=$(head -1 /run/secrets/credentials)
 
+# Wait until MariaDB is ready to accept connections
 until mysqladmin -h mariadb -u "${MYSQL_USER}" -p"${DB_PASSWORD}" ping --silent 2>/dev/null; do
     echo "Waiting for MariaDB..."
     sleep 2
@@ -18,9 +20,12 @@ done
 
 cd /var/www/html
 
+# Only install WordPress if it hasn't been set up yet
 if [ ! -f wp-config.php ]; then
+    # Download WordPress core files
     wp core download --version=6.4.3 --allow-root
 
+    # Create wp-config.php with database connection info
     wp config create \
         --dbname="${MYSQL_DATABASE}" \
         --dbuser="${MYSQL_USER}" \
@@ -28,6 +33,7 @@ if [ ! -f wp-config.php ]; then
         --dbhost=mariadb:3306 \
         --allow-root
 
+    # Install WordPress and create the admin user
     wp core install \
         --url="https://${DOMAIN_NAME}" \
         --title="${WP_TITLE}" \
@@ -36,17 +42,19 @@ if [ ! -f wp-config.php ]; then
         --admin_email="${WP_ADMIN_EMAIL}" \
         --allow-root
 
+    # Create a second user (editor) with a random password
     wp user create "${WP_USER}" "${WP_USER_EMAIL}" \
         --role=editor \
         --user_pass="$(openssl rand -base64 12)" \
         --allow-root
 
-    # Install custom theme
+    # Install and activate the custom theme
     cp -r /opt/inception-theme /var/www/html/wp-content/themes/inception-theme
     wp theme activate inception-theme --allow-root
     wp option update show_on_front page --allow-root
     wp option update page_on_front 2 --allow-root
 
+    # Set file ownership so the web server can read/write
     chown -R www-data:www-data /var/www/html
 fi
 
@@ -55,4 +63,5 @@ cp -r /opt/inception-theme/* /var/www/html/wp-content/themes/inception-theme/ 2>
     cp -r /opt/inception-theme /var/www/html/wp-content/themes/inception-theme
 chown -R www-data:www-data /var/www/html/wp-content/themes/inception-theme
 
+# Start PHP-FPM as PID 1
 exec php-fpm8.2 --nodaemonize
