@@ -103,6 +103,10 @@ check:
 	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_2 2>/dev/null | grep "Protocol  :" || true
 	@echo '> openssl s_client -connect vszpiech.42.fr:443 -tls1_3'
 	@echo Q | openssl s_client -connect vszpiech.42.fr:443 -tls1_3 2>/dev/null | grep "Protocol  :" || true
+	@echo ""
+	@echo "=== Comments ==="
+	@echo '> docker exec wordpress wp comment list --allow-root'
+	@$(DOCKER) exec wordpress wp comment list --allow-root --fields=comment_ID,comment_author,comment_content,comment_parent --format=table
 
 checkloop:
 	@echo "=== Forbidden patterns (should be empty) ==="
@@ -121,6 +125,10 @@ checktls:
 	@echo "=== TLS 1.1 (should be rejected) ==="
 	@echo '> echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_1'
 	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_1 2>&1 | grep -i "alert protocol version" && echo "PASS: TLS 1.1 rejected" || echo "FAIL: TLS 1.1 not rejected"
+
+comments:
+	@echo "=== WordPress Comments ==="
+	@$(DOCKER) exec wordpress wp comment list --allow-root --fields=comment_ID,comment_author,comment_content,comment_date,comment_parent --format=table
 
 usergen:
 	@echo "=== Generating comment threads ==="
@@ -209,4 +217,4 @@ usergen:
 	\
 	echo "=== Done: 6 threads, 30 comments ==="
 
-.PHONY: all bootstrap up down stop start clean fclean re dbuser dbroot containers check checkloop checktls usergen
+.PHONY: all bootstrap up down stop start clean fclean re dbuser dbroot containers check checkloop checktls comments usergen
