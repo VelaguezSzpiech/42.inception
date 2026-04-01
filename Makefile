@@ -123,37 +123,52 @@ checktls:
 	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_1 2>&1 | grep -i "alert protocol version" && echo "PASS: TLS 1.1 rejected" || echo "FAIL: TLS 1.1 not rejected"
 
 usergen:
-	@echo "=== Generating sample comments ==="
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="Alice" --comment_content="Great infrastructure setup! The Docker network isolation is really clean." \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="Bob" --comment_content="How does the TLS termination work with the reverse proxy?" \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="vszpiech_boss" --comment_content="TLS is terminated at NGINX, which forwards plain FastCGI to WordPress on port 9000. Only TLSv1.2 and v1.3 are accepted." \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="Charlie" --comment_content="Nice that secrets are mounted at runtime instead of baked into the images." \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="vszpiech_boss" --comment_content="Exactly, all credentials live in /run/secrets/ inside the containers. Nothing in the Dockerfiles or environment." \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="Diana" --comment_content="Does data persist after a reboot?" \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="Bob" --comment_content="Yes, named volumes map to /home/vszpiech/data/ on the host. Everything survives reboots and container restarts." \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="Eve" --comment_content="Love the custom theme. The file tree with animated connections is a nice touch." \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="Charlie" --comment_content="What happens if a container crashes?" \
-		--comment_approved=1 --allow-root
-	@$(DOCKER) exec wordpress wp comment create --comment_post_ID=2 \
-		--comment_author="vszpiech_boss" --comment_content="All services have restart: always and run their daemon as PID 1, so Docker restarts them automatically." \
-		--comment_approved=1 --allow-root
-	@echo "=== Done: 10 comments generated ==="
+	@echo "=== Generating threaded comment exchanges ==="
+	@POST=2; WP="$(DOCKER) exec wordpress wp --allow-root"; \
+	\
+	C1=$$($$WP comment create --comment_post_ID=$$POST --comment_author="Bob" \
+		--comment_content="How does the TLS termination work with the reverse proxy?" \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C1 --comment_author="vszpiech_boss" \
+		--comment_content="TLS is terminated at NGINX. It forwards plain FastCGI to WordPress on port 9000. Only TLSv1.2 and v1.3 are accepted." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	C1R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C1 --comment_author="Alice" \
+		--comment_content="So the WordPress container never sees encrypted traffic?" \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C1R --comment_author="vszpiech_boss" \
+		--comment_content="Correct. NGINX handles all the SSL, WordPress just receives plain PHP requests over the Docker network." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	\
+	C2=$$($$WP comment create --comment_post_ID=$$POST --comment_author="Charlie" \
+		--comment_content="Nice that secrets are mounted at runtime instead of baked into the images. How does that work exactly?" \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C2 --comment_author="vszpiech_boss" \
+		--comment_content="Docker secrets are defined in docker-compose.yml and mounted read-only at /run/secrets/ inside each container. The entrypoint scripts read them with cat." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C2 --comment_author="Diana" \
+		--comment_content="That is much safer than environment variables. Good approach." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	\
+	C3=$$($$WP comment create --comment_post_ID=$$POST --comment_author="Diana" \
+		--comment_content="Does data persist after a reboot?" \
+		--comment_approved=1 --porcelain); \
+	C3R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C3 --comment_author="Bob" \
+		--comment_content="Yes, named volumes map to /home/vszpiech/data/ on the host. Everything survives reboots and container restarts." \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C3R --comment_author="Diana" \
+		--comment_content="Perfect, just tested it and the comments are still here after a full VM reboot." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	\
+	C4=$$($$WP comment create --comment_post_ID=$$POST --comment_author="Eve" \
+		--comment_content="What happens if a container crashes? Does someone need to restart it manually?" \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C4 --comment_author="vszpiech_boss" \
+		--comment_content="No, all services have restart: always and run their main process as PID 1. Docker restarts them automatically." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C4 --comment_author="Charlie" \
+		--comment_content="I just killed the nginx process and it came back up in under 5 seconds. Very solid." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	\
+	echo "=== Done: 4 threads, 14 comments ==="
 
 .PHONY: all bootstrap up down stop start clean fclean re dbuser dbroot containers check checkloop checktls usergen
