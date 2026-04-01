@@ -123,52 +123,90 @@ checktls:
 	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_1 2>&1 | grep -i "alert protocol version" && echo "PASS: TLS 1.1 rejected" || echo "FAIL: TLS 1.1 not rejected"
 
 usergen:
-	@echo "=== Generating threaded comment exchanges ==="
+	@echo "=== Generating comment threads ==="
 	@POST=2; WP="$(DOCKER) exec wordpress wp --allow-root"; \
 	\
-	C1=$$($$WP comment create --comment_post_ID=$$POST --comment_author="Bob" \
-		--comment_content="How does the TLS termination work with the reverse proxy?" \
+	C=$$($$WP comment create --comment_post_ID=$$POST --comment_author="dev_noodle_42" \
+		--comment_content="Just mass-renamed a variable across 47 files. Felt like a god for about 3 seconds until the tests failed." \
 		--comment_approved=1 --porcelain); \
-	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C1 --comment_author="vszpiech_boss" \
-		--comment_content="TLS is terminated at NGINX. It forwards plain FastCGI to WordPress on port 9000. Only TLSv1.2 and v1.3 are accepted." \
+	R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="segfault_steve" \
+		--comment_content="The real fun is when find-and-replace turns your 'count' variable into 'acCOUNTing' in every comment." \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$R --comment_author="printf_princess" \
+		--comment_content="Happened to me with a variable called 'id'. My CSS had 'gridentity' everywhere." \
 		--comment_approved=1 --porcelain > /dev/null; \
-	C1R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C1 --comment_author="Alice" \
-		--comment_content="So the WordPress container never sees encrypted traffic?" \
-		--comment_approved=1 --porcelain); \
-	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C1R --comment_author="vszpiech_boss" \
-		--comment_content="Correct. NGINX handles all the SSL, WordPress just receives plain PHP requests over the Docker network." \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="404girlfriend" \
+		--comment_content="Pro tip: use word-boundary matching. Learned that the hard way when I renamed 'do' to 'execute' and broke every single do-while loop." \
 		--comment_approved=1 --porcelain > /dev/null; \
 	\
-	C2=$$($$WP comment create --comment_post_ID=$$POST --comment_author="Charlie" \
-		--comment_content="Nice that secrets are mounted at runtime instead of baked into the images. How does that work exactly?" \
+	C=$$($$WP comment create --comment_post_ID=$$POST --comment_author="mass_git_push" \
+		--comment_content="Spent 6 hours debugging a Docker container. The issue was a trailing space in my .env file." \
 		--comment_approved=1 --porcelain); \
-	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C2 --comment_author="vszpiech_boss" \
-		--comment_content="Docker secrets are defined in docker-compose.yml and mounted read-only at /run/secrets/ inside each container. The entrypoint scripts read them with cat." \
+	R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="chmod_777" \
+		--comment_content="Invisible characters are the final boss of programming." \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$R --comment_author="kernel_panic_at_the_disco" \
+		--comment_content="Once spent an entire day because of a Unicode non-breaking space that looked exactly like a regular space. My terminal lied to me." \
 		--comment_approved=1 --porcelain > /dev/null; \
-	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C2 --comment_author="Diana" \
-		--comment_content="That is much safer than environment variables. Good approach." \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="dev_noodle_42" \
+		--comment_content="The .env file is just a txt file with trust issues." \
 		--comment_approved=1 --porcelain > /dev/null; \
 	\
-	C3=$$($$WP comment create --comment_post_ID=$$POST --comment_author="Diana" \
-		--comment_content="Does data persist after a reboot?" \
+	C=$$($$WP comment create --comment_post_ID=$$POST --comment_author="printf_princess" \
+		--comment_content="TIL git blame is not for assigning blame, it is for finding out who to buy coffee for because their code saved the project 3 years ago." \
 		--comment_approved=1 --porcelain); \
-	C3R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C3 --comment_author="Bob" \
-		--comment_content="Yes, named volumes map to /home/vszpiech/data/ on the host. Everything survives reboots and container restarts." \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="mass_git_push" \
+		--comment_content="git blame -> git appreciate -> git buy-a-drink" \
+		--comment_approved=1 --porcelain > /dev/null; \
+	R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="sudo_make_sandwich" \
+		--comment_content="In my experience git blame is for finding out that I am the person who wrote the terrible code 6 months ago." \
 		--comment_approved=1 --porcelain); \
-	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C3R --comment_author="Diana" \
-		--comment_content="Perfect, just tested it and the comments are still here after a full VM reboot." \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$R --comment_author="segfault_steve" \
+		--comment_content="Past me is my worst enemy. Present me is writing code for future me to hate. The circle of life." \
 		--comment_approved=1 --porcelain > /dev/null; \
 	\
-	C4=$$($$WP comment create --comment_post_ID=$$POST --comment_author="Eve" \
-		--comment_content="What happens if a container crashes? Does someone need to restart it manually?" \
+	C=$$($$WP comment create --comment_post_ID=$$POST --comment_author="sudo_make_sandwich" \
+		--comment_content="Hot take: writing Dockerfiles from scratch is actually fun once you stop copy-pasting from Stack Overflow." \
 		--comment_approved=1 --porcelain); \
-	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C4 --comment_author="vszpiech_boss" \
-		--comment_content="No, all services have restart: always and run their main process as PID 1. Docker restarts them automatically." \
+	R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="404girlfriend" \
+		--comment_content="Bold of you to assume I have ever stopped." \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$R --comment_author="chmod_777" \
+		--comment_content="Stack Overflow is just my rubber duck that actually talks back." \
 		--comment_approved=1 --porcelain > /dev/null; \
-	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C4 --comment_author="Charlie" \
-		--comment_content="I just killed the nginx process and it came back up in under 5 seconds. Very solid." \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="kernel_panic_at_the_disco" \
+		--comment_content="Once you understand what each layer does it clicks. The problem is the 47 failed builds before the click." \
 		--comment_approved=1 --porcelain > /dev/null; \
 	\
-	echo "=== Done: 4 threads, 14 comments ==="
+	C=$$($$WP comment create --comment_post_ID=$$POST --comment_author="segfault_steve" \
+		--comment_content="Normalize talking to your code out loud. I just told my nginx config it was doing great and it finally worked." \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="printf_princess" \
+		--comment_content="Rubber duck debugging but you ARE the duck." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="dev_noodle_42" \
+		--comment_content="I threatened my code with a full rewrite and suddenly the bug fixed itself. Coincidence? I think not." \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$R --comment_author="sudo_make_sandwich" \
+		--comment_content="The code knows. It can smell fear and rewrites." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	\
+	C=$$($$WP comment create --comment_post_ID=$$POST --comment_author="kernel_panic_at_the_disco" \
+		--comment_content="The 5 stages of debugging: 1) That is impossible. 2) That should not happen. 3) How does that even work? 4) Oh. 5) OH NO." \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="chmod_777" \
+		--comment_content="You forgot stage 6: works on my machine." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="mass_git_push" \
+		--comment_content="Stage 7: ship it inside a container so it is always your machine." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	R=$$($$WP comment create --comment_post_ID=$$POST --comment_parent=$$C --comment_author="404girlfriend" \
+		--comment_content="Stage 4 is always a missing semicolon or a typo in a config path. Always." \
+		--comment_approved=1 --porcelain); \
+	$$WP comment create --comment_post_ID=$$POST --comment_parent=$$R --comment_author="segfault_steve" \
+		--comment_content="Or a port number. I once spent 4 hours because I had 9000 in one file and 9001 in another." \
+		--comment_approved=1 --porcelain > /dev/null; \
+	\
+	echo "=== Done: 6 threads, 30 comments ==="
 
 .PHONY: all bootstrap up down stop start clean fclean re dbuser dbroot containers check checkloop checktls usergen
