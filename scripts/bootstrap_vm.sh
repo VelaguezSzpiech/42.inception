@@ -28,10 +28,33 @@ run_root() {
     fi
 }
 
-if [ ! -f "${ENV_FILE}" ]; then
-    echo "Missing ${ENV_FILE}" >&2
-    exit 1
-fi
+ensure_env_file() {
+    if [ -f "${ENV_FILE}" ]; then
+        echo ".env already exists, skipping generation."
+        return
+    fi
+
+    echo "Generating ${ENV_FILE} ..."
+    local login
+    login="$(whoami)"
+
+    cat > "${ENV_FILE}" <<ENVEOF
+DOMAIN_NAME=${login}.42.fr
+# MYSQL SETUP
+MYSQL_DATABASE=wordpress_db
+MYSQL_USER=wp_user
+# WORDPRESS SETUP
+WP_TITLE=Inception
+WP_ADMIN_USER=${login}_boss
+WP_ADMIN_EMAIL=${login}@student.42wolfsburg.de
+WP_USER=${login}_editor
+WP_USER_EMAIL=editor@${login}.42.fr
+ENVEOF
+
+    echo "Created ${ENV_FILE}"
+}
+
+ensure_env_file
 
 set -a
 . "${ENV_FILE}"
@@ -118,18 +141,27 @@ ensure_secrets() {
     mkdir -p "${SECRETS_DIR}"
 
     if [ ! -f "${SECRETS_DIR}/db_password.txt" ]; then
+        echo "Generating db_password.txt ..."
         random_secret > "${SECRETS_DIR}/db_password.txt"
+    else
+        echo "db_password.txt already exists, skipping."
     fi
 
     if [ ! -f "${SECRETS_DIR}/db_root_password.txt" ]; then
+        echo "Generating db_root_password.txt ..."
         random_secret > "${SECRETS_DIR}/db_root_password.txt"
+    else
+        echo "db_root_password.txt already exists, skipping."
     fi
 
     if [ ! -f "${SECRETS_DIR}/credentials.txt" ]; then
+        echo "Generating credentials.txt ..."
         {
             printf '%s\n' "${WP_ADMIN_USER}"
             random_secret
         } > "${SECRETS_DIR}/credentials.txt"
+    else
+        echo "credentials.txt already exists, skipping."
     fi
 
     chmod 600 "${SECRETS_DIR}/db_password.txt" \
@@ -146,11 +178,14 @@ ensure_certificate() {
     subject="/C=DE/ST=Niedersachsen/L=Wolfsburg/O=42/CN=${DOMAIN_NAME}"
 
     if [ ! -f "${crt}" ] || [ ! -f "${key}" ]; then
+        echo "Generating SSL certificate and key for ${DOMAIN_NAME} ..."
         openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
             -keyout "${key}" \
             -out "${crt}" \
             -subj "${subject}"
         chmod 600 "${key}"
+    else
+        echo "SSL certificate and key already exist, skipping."
     fi
 }
 
@@ -176,13 +211,21 @@ ensure_guest_additions() {
 }
 
 main() {
+    echo "==> Installing base packages ..."
     ensure_package_basics
+    echo "==> Checking Guest Additions ..."
     ensure_guest_additions
+    echo "==> Ensuring Docker is installed ..."
     ensure_docker
+    echo "==> Configuring docker group ..."
     ensure_docker_group
+    echo "==> Ensuring /etc/hosts entry ..."
     ensure_hosts_entry
+    echo "==> Creating data directories ..."
     ensure_data_dirs
+    echo "==> Setting up secrets ..."
     ensure_secrets
+    echo "==> Setting up SSL certificate ..."
     ensure_certificate
 
     echo "Bootstrap complete."

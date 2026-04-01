@@ -20,6 +20,9 @@ srcs/requirements/nginx/tools/*.key
 srcs/requirements/nginx/tools/*.pem
 !srcs/requirements/nginx/tools/.gitkeep
 
+# Generated environment file (created by bootstrap)
+srcs/.env
+
 # Local project notes and helper automation not needed for evaluation
 CLAUDE.md
 DEV_DOC.md
