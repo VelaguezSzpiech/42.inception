@@ -104,9 +104,9 @@ check:
 	@echo '> openssl s_client -connect vszpiech.42.fr:443 -tls1_3'
 	@echo Q | openssl s_client -connect vszpiech.42.fr:443 -tls1_3 2>/dev/null | grep "Protocol  :" || true
 	@echo ""
-	@echo "=== Comments ==="
-	@echo '> docker exec wordpress wp comment list --allow-root'
-	@$(DOCKER) exec wordpress wp comment list --allow-root --fields=comment_ID,comment_author,comment_content,comment_parent --format=table
+	@echo "=== Database: wp_comments ==="
+	@echo '> SELECT * FROM wp_comments'
+	@$(DOCKER) exec mariadb mysql -t -u wp_user -p"$(DB_PW)" wordpress_db -e "SELECT * FROM wp_comments;"
 
 checkloop:
 	@echo "=== Forbidden patterns (should be empty) ==="
@@ -127,8 +127,8 @@ checktls:
 	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_1 2>&1 | grep -i "alert protocol version" && echo "PASS: TLS 1.1 rejected" || echo "FAIL: TLS 1.1 not rejected"
 
 comments:
-	@echo "=== WordPress Comments ==="
-	@$(DOCKER) exec wordpress wp comment list --allow-root --fields=comment_ID,comment_author,comment_content,comment_date,comment_parent --format=table
+	@echo "=== Database: wp_comments ==="
+	@$(DOCKER) exec mariadb mysql -t -u wp_user -p"$(DB_PW)" wordpress_db -e "SELECT * FROM wp_comments;"
 
 usergen:
 	@echo "=== Generating comment threads ==="
