@@ -26,3 +26,27 @@ add_filter('show_admin_bar', '__return_false');
 add_theme_support('automatic-feed-links');
 add_theme_support('title-tag');
 add_theme_support('post-thumbnails');
+
+// Clean up wp-admin dashboard
+function inception_remove_dashboard_widgets() {
+    remove_meta_box('dashboard_primary', 'dashboard', 'side');       // WordPress Events and News
+    remove_meta_box('dashboard_quick_press', 'dashboard', 'side');   // Quick Draft
+    remove_meta_box('dashboard_site_health', 'dashboard', 'normal'); // Site Health
+    remove_action('welcome_panel', 'wp_welcome_panel');              // Welcome panel
+}
+add_action('wp_dashboard_setup', 'inception_remove_dashboard_widgets');
+
+// Hide update nag
+function inception_hide_update_nag() {
+    remove_action('admin_notices', 'update_nag', 3);
+}
+add_action('admin_head', 'inception_hide_update_nag');
+
+// Hide update notices for non-critical display
+function inception_admin_cleanup() {
+    echo '<style>
+        .update-nag, .updated, .notice-warning.notice-alt { display: none !important; }
+        .wrap > .notice:not(.notice-error) { display: none !important; }
+    </style>';
+}
+add_action('admin_head', 'inception_admin_cleanup');
