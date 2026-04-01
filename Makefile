@@ -88,4 +88,16 @@ check:
 	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_2 2>/dev/null | grep "Protocol  :" || true
 	@echo Q | openssl s_client -connect vszpiech.42.fr:443 -tls1_3 2>/dev/null | grep "Protocol  :" || true
 
-.PHONY: all bootstrap up down stop start clean fclean re dbuser dbroot containers check
+checkloop:
+	@echo "=== Forbidden patterns (should be empty) ==="
+	@grep -rE "tail -f|sleep infinity|while true|network: host|--link|links:" srcs/ && echo "FAIL: forbidden pattern found!" || echo "PASS: no forbidden patterns"
+
+checktls:
+	@echo "=== TLS 1.2 (should work) ==="
+	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_2 2>/dev/null | grep "Protocol  :" || echo "FAIL"
+	@echo "=== TLS 1.3 (should work) ==="
+	@echo Q | openssl s_client -connect vszpiech.42.fr:443 -tls1_3 2>/dev/null | grep "Protocol  :" || echo "FAIL"
+	@echo "=== TLS 1.1 (should be rejected) ==="
+	@echo | openssl s_client -connect vszpiech.42.fr:443 -tls1_1 2>&1 | grep -i "alert protocol version" && echo "PASS: TLS 1.1 rejected" || echo "FAIL: TLS 1.1 not rejected"
+
+.PHONY: all bootstrap up down stop start clean fclean re dbuser dbroot containers check checkloop checktls
