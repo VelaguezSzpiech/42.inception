@@ -25,10 +25,9 @@ srcs/.env
 
 # Local project notes and helper automation not needed for evaluation
 CLAUDE.md
-DEV_DOC.md
-USER_DOC.md
 inception.md
 inception.pdf
+42_inception_evalsheet.md
 configure_vm.sh
 copy_ssh_key.sh
 deploy_to_vm.sh

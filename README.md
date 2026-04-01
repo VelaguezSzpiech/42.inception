@@ -1,6 +1,6 @@
-# 42.inception
-
 *This project has been created as part of the 42 curriculum by vszpiech.*
+
+# 42.inception
 
 ## Description
 
@@ -49,25 +49,15 @@ This project uses **Docker** and **Docker Compose** to orchestrate a multi-conta
 ### Installation and Execution
 
 1. Clone the repository into the VM
-2. Generate secrets:
+2. Run the bootstrap script to generate secrets, the SSL certificate, and the `.env` file:
    ```bash
-   openssl rand -base64 16 | tr -d '\n' > secrets/db_password.txt
-   openssl rand -base64 16 | tr -d '\n' > secrets/db_root_password.txt
-   printf 'vszpiech_boss\n' > secrets/credentials.txt
-   openssl rand -base64 16 | tr -d '\n' >> secrets/credentials.txt
+   make bootstrap
    ```
-3. Generate the SSL certificate:
-   ```bash
-   openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-     -keyout srcs/requirements/nginx/tools/vszpiech.42.fr.key \
-     -out srcs/requirements/nginx/tools/vszpiech.42.fr.crt \
-     -subj "/C=DE/ST=Niedersachsen/L=Wolfsburg/O=42/CN=vszpiech.42.fr"
-   ```
-4. Build and start:
+3. Build and start:
    ```bash
    make
    ```
-5. Access the site at `https://vszpiech.42.fr`
+4. Access the site at `https://vszpiech.42.fr`
 
 ## Resources
 
