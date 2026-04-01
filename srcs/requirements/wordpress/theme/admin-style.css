@@ -1,0 +1,609 @@
+/*
+ * Inception Dark Admin Theme
+ * Matches the front-end dark aesthetic for wp-admin and wp-login
+ */
+
+:root {
+    --inc-primary: #151412;
+    --inc-secondary: #26231f;
+    --inc-accent: #3a342d;
+    --inc-highlight: #b7ad9b;
+    --inc-text: #ede8de;
+    --inc-text-strong: #f9f6f1;
+    --inc-text-muted: rgba(243, 238, 229, 0.56);
+    --inc-card-bg: rgba(243, 238, 229, 0.04);
+    --inc-card-border: rgba(243, 238, 229, 0.12);
+    --inc-danger: #c97764;
+    --inc-success: #8fa07e;
+    --inc-info: #a89880;
+    --inc-surface-2: rgba(243, 238, 229, 0.08);
+    --inc-surface-3: rgba(243, 238, 229, 0.14);
+    --inc-border: rgba(243, 238, 229, 0.12);
+}
+
+/* ===================== GLOBAL ===================== */
+html, body {
+    background: var(--inc-primary) !important;
+    color: var(--inc-text) !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
+}
+
+/* ===================== ADMIN MENU (LEFT SIDEBAR) ===================== */
+#adminmenuback, #adminmenuwrap, #adminmenu {
+    background: var(--inc-secondary) !important;
+}
+
+#adminmenu a {
+    color: var(--inc-text-muted) !important;
+    transition: color 0.15s, background 0.15s;
+}
+
+#adminmenu a:hover,
+#adminmenu li.menu-top:hover,
+#adminmenu li.opensub > a.menu-top,
+#adminmenu li > a.menu-top:focus {
+    color: var(--inc-text-strong) !important;
+    background: var(--inc-accent) !important;
+}
+
+#adminmenu .wp-has-current-submenu .wp-submenu .wp-submenu-head,
+#adminmenu .wp-menu-arrow,
+#adminmenu .wp-menu-arrow div,
+#adminmenu li.current a.menu-top,
+#adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+#adminmenu .current div.wp-menu-image::before,
+#adminmenu .wp-has-current-submenu div.wp-menu-image::before {
+    color: var(--inc-highlight) !important;
+    background: var(--inc-accent) !important;
+}
+
+#adminmenu div.wp-menu-image::before {
+    color: var(--inc-text-muted) !important;
+}
+
+#adminmenu li.menu-top:hover div.wp-menu-image::before,
+#adminmenu li.opensub div.wp-menu-image::before {
+    color: var(--inc-highlight) !important;
+}
+
+/* Submenu */
+#adminmenu .wp-submenu,
+#adminmenu .wp-has-current-submenu .wp-submenu,
+#adminmenu .wp-has-current-submenu .wp-submenu.sub-open,
+#adminmenu .wp-has-current-submenu.opensub .wp-submenu,
+#adminmenu a.wp-has-current-submenu:focus + .wp-submenu {
+    background: var(--inc-primary) !important;
+    border-color: var(--inc-border) !important;
+}
+
+#adminmenu .wp-submenu a {
+    color: var(--inc-text-muted) !important;
+}
+
+#adminmenu .wp-submenu a:hover,
+#adminmenu .wp-submenu a:focus {
+    color: var(--inc-highlight) !important;
+}
+
+#adminmenu .wp-submenu li.current a {
+    color: var(--inc-highlight) !important;
+}
+
+/* Collapse button */
+#collapse-menu {
+    border-top-color: var(--inc-border) !important;
+}
+
+#collapse-button {
+    color: var(--inc-text-muted) !important;
+}
+
+/* ===================== ADMIN BAR (TOP) ===================== */
+#wpadminbar {
+    background: var(--inc-secondary) !important;
+    border-bottom: 1px solid var(--inc-border) !important;
+}
+
+#wpadminbar a.ab-item,
+#wpadminbar > #wp-toolbar span.ab-label,
+#wpadminbar #wp-admin-bar-site-name > .ab-item::before,
+#wpadminbar .ab-icon::before,
+#wpadminbar .ab-item::before {
+    color: var(--inc-text-muted) !important;
+}
+
+#wpadminbar a:hover .ab-item,
+#wpadminbar a:hover span.ab-label,
+#wpadminbar li:hover .ab-item,
+#wpadminbar li:hover span.ab-label {
+    color: var(--inc-text-strong) !important;
+}
+
+#wpadminbar .menupop .ab-sub-wrapper,
+#wpadminbar .shortlink-input {
+    background: var(--inc-primary) !important;
+    border-color: var(--inc-border) !important;
+}
+
+#wpadminbar .ab-submenu .ab-item {
+    color: var(--inc-text-muted) !important;
+}
+
+#wpadminbar .ab-submenu .ab-item:hover {
+    color: var(--inc-highlight) !important;
+    background: var(--inc-surface-2) !important;
+}
+
+/* ===================== MAIN CONTENT AREA ===================== */
+#wpcontent, #wpbody-content, .wrap {
+    background: var(--inc-primary) !important;
+}
+
+#wpbody-content {
+    padding-bottom: 2rem;
+}
+
+/* Page titles */
+.wrap h1, .wrap h2 {
+    color: var(--inc-text-strong) !important;
+}
+
+/* ===================== CARDS / POSTBOXES ===================== */
+.postbox, .stuffbox,
+#dashboard-widgets .postbox {
+    background: var(--inc-card-bg) !important;
+    border: 1px solid var(--inc-card-border) !important;
+    border-radius: 4px !important;
+}
+
+.postbox .hndle,
+.stuffbox .hndle {
+    border-bottom: 1px solid var(--inc-border) !important;
+    color: var(--inc-text-strong) !important;
+}
+
+.postbox .inside,
+.stuffbox .inside {
+    color: var(--inc-text) !important;
+}
+
+.postbox .inside a {
+    color: var(--inc-highlight) !important;
+}
+
+/* Welcome panel */
+.welcome-panel {
+    background: var(--inc-card-bg) !important;
+    border: 1px solid var(--inc-card-border) !important;
+    color: var(--inc-text) !important;
+}
+
+.welcome-panel h2 { color: var(--inc-text-strong) !important; }
+.welcome-panel p { color: var(--inc-text-muted) !important; }
+.welcome-panel a { color: var(--inc-highlight) !important; }
+
+/* ===================== TABLES ===================== */
+.widefat, .wp-list-table {
+    background: var(--inc-card-bg) !important;
+    border-color: var(--inc-border) !important;
+}
+
+.widefat th, .wp-list-table th {
+    color: var(--inc-text-strong) !important;
+    border-bottom-color: var(--inc-border) !important;
+    background: var(--inc-surface-2) !important;
+}
+
+.widefat td, .wp-list-table td {
+    color: var(--inc-text) !important;
+    border-bottom-color: var(--inc-border) !important;
+}
+
+.widefat tbody tr:hover td,
+.wp-list-table tbody tr:hover td {
+    background: var(--inc-surface-2) !important;
+}
+
+.widefat a, .wp-list-table a {
+    color: var(--inc-highlight) !important;
+}
+
+.widefat thead tr th, .widefat thead tr td,
+.widefat tfoot tr th, .widefat tfoot tr td {
+    border-color: var(--inc-border) !important;
+}
+
+/* Row actions */
+.row-actions span a {
+    color: var(--inc-info) !important;
+}
+
+.row-actions span.trash a,
+.row-actions span.delete a {
+    color: var(--inc-danger) !important;
+}
+
+/* Striped rows */
+.striped > tbody > :nth-child(odd),
+ul.striped > :nth-child(odd),
+.alternate {
+    background: rgba(243, 238, 229, 0.02) !important;
+}
+
+/* ===================== BUTTONS ===================== */
+.button, .button-secondary {
+    background: var(--inc-surface-3) !important;
+    border-color: var(--inc-border) !important;
+    color: var(--inc-text) !important;
+    border-radius: 4px !important;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.button:hover, .button-secondary:hover {
+    background: var(--inc-accent) !important;
+    border-color: var(--inc-highlight) !important;
+    color: var(--inc-text-strong) !important;
+}
+
+.button-primary, input[type="submit"].button-primary {
+    background: var(--inc-highlight) !important;
+    border-color: var(--inc-highlight) !important;
+    color: #1d1a16 !important;
+    border-radius: 4px !important;
+    font-weight: 600 !important;
+}
+
+.button-primary:hover, input[type="submit"].button-primary:hover {
+    background: #ccc2b0 !important;
+    border-color: #ccc2b0 !important;
+    color: #1d1a16 !important;
+}
+
+.button-link {
+    color: var(--inc-highlight) !important;
+}
+
+.button-link-delete, .submitdelete {
+    color: var(--inc-danger) !important;
+}
+
+/* ===================== FORMS ===================== */
+input[type="text"], input[type="password"], input[type="email"],
+input[type="url"], input[type="number"], input[type="search"],
+input[type="tel"], textarea, select {
+    background: var(--inc-surface-2) !important;
+    border: 1px solid var(--inc-border) !important;
+    border-radius: 4px !important;
+    color: var(--inc-text) !important;
+    transition: border-color 0.15s;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus,
+input[type="url"]:focus, input[type="number"]:focus, input[type="search"]:focus,
+input[type="tel"]:focus, textarea:focus, select:focus {
+    border-color: var(--inc-highlight) !important;
+    box-shadow: 0 0 0 1px var(--inc-highlight) !important;
+    outline: none !important;
+}
+
+input[type="checkbox"], input[type="radio"] {
+    background: var(--inc-surface-2) !important;
+    border-color: var(--inc-border) !important;
+}
+
+input[type="checkbox"]:checked::before {
+    color: var(--inc-highlight) !important;
+}
+
+label {
+    color: var(--inc-text) !important;
+}
+
+/* ===================== NOTICES ===================== */
+.notice, div.updated, div.error {
+    background: var(--inc-card-bg) !important;
+    border-color: var(--inc-info) !important;
+    color: var(--inc-text) !important;
+}
+
+.notice-success, div.updated {
+    border-left-color: var(--inc-success) !important;
+}
+
+.notice-error, div.error {
+    border-left-color: var(--inc-danger) !important;
+}
+
+.notice-warning {
+    border-left-color: #d4a84b !important;
+}
+
+.notice a {
+    color: var(--inc-highlight) !important;
+}
+
+/* ===================== EDITOR ===================== */
+#titlediv #title {
+    background: var(--inc-surface-2) !important;
+    border-color: var(--inc-border) !important;
+    color: var(--inc-text-strong) !important;
+}
+
+.wp-editor-container {
+    border-color: var(--inc-border) !important;
+}
+
+.wp-editor-tabs .wp-switch-editor {
+    background: var(--inc-surface-2) !important;
+    border-color: var(--inc-border) !important;
+    color: var(--inc-text-muted) !important;
+}
+
+.wp-switch-editor.switch-tmce:hover,
+.wp-switch-editor.switch-html:hover {
+    color: var(--inc-text-strong) !important;
+}
+
+.tmce-active .switch-tmce,
+.html-active .switch-html {
+    background: var(--inc-accent) !important;
+    color: var(--inc-text-strong) !important;
+    border-bottom-color: var(--inc-accent) !important;
+}
+
+.quicktags-toolbar {
+    background: var(--inc-surface-2) !important;
+    border-bottom-color: var(--inc-border) !important;
+}
+
+/* ===================== SIDEBAR WIDGETS ===================== */
+#side-sortables .postbox,
+.meta-box-sortables .postbox {
+    background: var(--inc-card-bg) !important;
+    border-color: var(--inc-card-border) !important;
+}
+
+.misc-pub-section {
+    border-bottom-color: var(--inc-border) !important;
+    color: var(--inc-text) !important;
+}
+
+#major-publishing-actions {
+    background: var(--inc-surface-2) !important;
+    border-top-color: var(--inc-border) !important;
+}
+
+/* ===================== PAGINATION / TABLENAV ===================== */
+.tablenav {
+    color: var(--inc-text-muted) !important;
+}
+
+.tablenav .tablenav-pages a {
+    background: var(--inc-surface-2) !important;
+    border-color: var(--inc-border) !important;
+    color: var(--inc-text) !important;
+}
+
+.tablenav .tablenav-pages a:hover {
+    background: var(--inc-accent) !important;
+    color: var(--inc-text-strong) !important;
+}
+
+.tablenav .tablenav-pages .current-page {
+    background: var(--inc-surface-2) !important;
+    border-color: var(--inc-border) !important;
+    color: var(--inc-text) !important;
+}
+
+.subsubsub a {
+    color: var(--inc-text-muted) !important;
+}
+
+.subsubsub a:hover,
+.subsubsub a.current {
+    color: var(--inc-highlight) !important;
+}
+
+/* ===================== DASHBOARD WIDGETS ===================== */
+#dashboard-widgets .postbox .inside p,
+#dashboard-widgets .postbox .inside li {
+    color: var(--inc-text-muted) !important;
+}
+
+.activity-block {
+    border-bottom-color: var(--inc-border) !important;
+}
+
+#the-comment-list .comment {
+    border-bottom-color: var(--inc-border) !important;
+}
+
+/* At a Glance */
+#dashboard_right_now li a,
+#dashboard_right_now .sub {
+    color: var(--inc-highlight) !important;
+}
+
+/* ===================== FOOTER ===================== */
+#wpfooter {
+    color: var(--inc-text-muted) !important;
+    border-top-color: var(--inc-border) !important;
+}
+
+#wpfooter a {
+    color: var(--inc-highlight) !important;
+}
+
+/* ===================== GENERAL LINKS & TEXT ===================== */
+a {
+    color: var(--inc-highlight) !important;
+}
+
+.description, .form-table td p.description {
+    color: var(--inc-text-muted) !important;
+}
+
+h1, h2, h3, h4, h5 {
+    color: var(--inc-text-strong) !important;
+}
+
+p, li, span, div {
+    color: inherit;
+}
+
+.form-table th {
+    color: var(--inc-text) !important;
+}
+
+.form-table td {
+    color: var(--inc-text) !important;
+}
+
+hr {
+    border-color: var(--inc-border) !important;
+}
+
+/* ===================== SCREEN OPTIONS / HELP ===================== */
+#screen-meta, #contextual-help-wrap {
+    background: var(--inc-secondary) !important;
+    border-color: var(--inc-border) !important;
+}
+
+#screen-meta-links .screen-meta-toggle {
+    border-color: var(--inc-border) !important;
+}
+
+#screen-meta-links .show-settings {
+    color: var(--inc-text-muted) !important;
+}
+
+.contextual-help-tabs .active a {
+    color: var(--inc-highlight) !important;
+}
+
+/* ===================== WP-LOGIN PAGE ===================== */
+body.login {
+    background: radial-gradient(1200px 520px at 10% -10%, var(--inc-secondary), transparent 72%), var(--inc-primary) !important;
+}
+
+.login h1 a {
+    background-image: none !important;
+    text-indent: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    font-size: 2rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.03em !important;
+    background: linear-gradient(135deg, var(--inc-text-strong) 30%, var(--inc-highlight) 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+.login form {
+    background: var(--inc-card-bg) !important;
+    border: 1px solid var(--inc-card-border) !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+}
+
+.login form .input, .login input[type="text"],
+.login input[type="password"] {
+    background: var(--inc-surface-2) !important;
+    border-color: var(--inc-border) !important;
+    color: var(--inc-text) !important;
+}
+
+.login form .input:focus, .login input[type="text"]:focus,
+.login input[type="password"]:focus {
+    border-color: var(--inc-highlight) !important;
+    box-shadow: 0 0 0 1px var(--inc-highlight) !important;
+}
+
+.login label {
+    color: var(--inc-text) !important;
+}
+
+.login #backtoblog a, .login #nav a {
+    color: var(--inc-text-muted) !important;
+}
+
+.login #backtoblog a:hover, .login #nav a:hover {
+    color: var(--inc-highlight) !important;
+}
+
+.login .message, .login .success {
+    background: var(--inc-card-bg) !important;
+    border-left-color: var(--inc-info) !important;
+    color: var(--inc-text) !important;
+}
+
+.login .button-primary {
+    background: var(--inc-highlight) !important;
+    border-color: var(--inc-highlight) !important;
+    color: #1d1a16 !important;
+}
+
+.login .button-primary:hover {
+    background: #ccc2b0 !important;
+}
+
+/* ===================== MISC ===================== */
+.wp-heading-inline + .page-title-action {
+    background: var(--inc-surface-3) !important;
+    border-color: var(--inc-border) !important;
+    color: var(--inc-text) !important;
+    border-radius: 4px !important;
+}
+
+.wp-heading-inline + .page-title-action:hover {
+    background: var(--inc-accent) !important;
+    border-color: var(--inc-highlight) !important;
+    color: var(--inc-text-strong) !important;
+}
+
+.view-switch a {
+    color: var(--inc-text-muted) !important;
+}
+
+.view-switch a.current {
+    color: var(--inc-highlight) !important;
+}
+
+#wpbody-content .wrap .add-new-h2 {
+    color: var(--inc-text) !important;
+    background: var(--inc-surface-3) !important;
+}
+
+/* Media modal */
+.media-modal {
+    background: var(--inc-primary) !important;
+    border-color: var(--inc-border) !important;
+}
+
+.media-modal-content {
+    background: var(--inc-primary) !important;
+}
+
+.media-frame-title h1 {
+    color: var(--inc-text-strong) !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--inc-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--inc-accent);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--inc-info);
+}
