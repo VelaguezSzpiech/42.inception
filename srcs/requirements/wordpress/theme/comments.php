@@ -8,6 +8,10 @@
         'comment_notes_after'  => '',
         'class_form'           => 'comment-form',
         'class_submit'         => 'btn',
+        'fields'               => array(
+            'author' => '<p class="comment-form-author"><label for="author">Name</label><input id="author" name="author" type="text" value="' . esc_attr($commenter['comment_author'] ?? '') . '" required /></p>',
+            'email'  => '<p class="comment-form-email"><label for="email">Email</label><input id="email" name="email" type="email" value="' . esc_attr($commenter['comment_author_email'] ?? '') . '" /></p>',
+        ),
     )); ?>
 <?php endif; ?>
 
