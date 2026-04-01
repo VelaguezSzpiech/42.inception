@@ -441,9 +441,34 @@ a:hover { opacity: 0.8; }
     margin: 0;
 }
 
+/* Nested reply threads */
+.comment-list .children {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 1.5rem;
+    border-left: 2px solid var(--accent);
+}
+
+.comment-list .children .children {
+    border-left-color: rgba(183, 173, 155, 0.15);
+}
+
 .comment-item {
-    padding: 1.2rem 0;
+    padding: 1rem 0 1rem 1rem;
     border-bottom: 1px solid var(--card-border);
+}
+
+.comment-list > .comment-item {
+    padding-left: 0;
+}
+
+.comment-list .children .comment-item {
+    border-bottom: none;
+    padding: 0.6rem 0 0.6rem 1rem;
+}
+
+.comment-list .children .comment-item:last-child {
+    padding-bottom: 0.2rem;
 }
 
 .comment-item:last-child { border-bottom: none; }

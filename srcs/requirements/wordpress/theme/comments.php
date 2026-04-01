@@ -23,6 +23,7 @@
                 'style'       => 'ol',
                 'short_ping'  => true,
                 'callback'    => 'inception_comment',
+                'max_depth'   => 5,
             )); ?>
         </ol>
         <?php if (get_comment_pages_count() > 1) : ?>

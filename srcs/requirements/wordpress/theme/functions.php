@@ -14,11 +14,14 @@ add_theme_support('title-tag');
 add_theme_support('post-thumbnails');
 
 // Allow guest comments: name required, email optional, no login needed
+// Enable threaded comments
 function inception_allow_guest_comments() {
     update_option('comment_registration', 0);
     update_option('require_name_email', 0);
     update_option('comment_moderation', 0);
     update_option('comment_previously_approved', 0);
+    update_option('thread_comments', 1);
+    update_option('thread_comments_depth', 5);
 }
 
 // Require name but not email
