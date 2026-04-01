@@ -95,103 +95,9 @@
     var wrapper = document.getElementById('filetreeWrapper');
     var treeEl = document.getElementById('filetree');
 
-    /* ========== PROJECT FILE TREE DATA ========== */
-    var TREE_DATA = {
-        name: 'inception', type: 'dir', expanded: true, id: 'root', children: [
-            { name: 'Makefile', type: 'file', id: 'makefile', filePath: 'Makefile', desc: 'build automation' },
-            { name: 'srcs/', type: 'dir', expanded: true, id: 'srcs', children: [
-                { name: 'docker-compose.yml', type: 'file', id: 'docker-compose', filePath: 'srcs/docker-compose.yml', desc: 'orchestration' },
-                { name: '.env', type: 'file', id: 'env-file', filePath: 'srcs/.env', desc: 'environment variables' },
-                { name: 'requirements/', type: 'dir', expanded: true, id: 'requirements', children: [
-                    { name: 'nginx/', type: 'dir', expanded: false, id: 'nginx-dir', children: [
-                        { name: 'Dockerfile', type: 'file', id: 'nginx-dockerfile', filePath: 'srcs/requirements/nginx/Dockerfile', desc: 'container image' },
-                        { name: 'conf/', type: 'dir', expanded: false, id: 'nginx-conf-dir', children: [
-                            { name: 'nginx.conf', type: 'file', id: 'nginx-conf', filePath: 'srcs/requirements/nginx/conf/nginx.conf', desc: 'TLS + reverse proxy' }
-                        ]},
-                        { name: 'tools/', type: 'dir', expanded: false, id: 'nginx-tools', children: [
-                            { name: 'vszpiech.42.fr.crt', type: 'file', id: 'nginx-crt', filePath: null, desc: 'SSL certificate' },
-                            { name: 'vszpiech.42.fr.key', type: 'file', id: 'nginx-key', filePath: null, desc: 'SSL private key' }
-                        ]}
-                    ]},
-                    { name: 'wordpress/', type: 'dir', expanded: false, id: 'wp-dir', children: [
-                        { name: 'Dockerfile', type: 'file', id: 'wp-dockerfile', filePath: 'srcs/requirements/wordpress/Dockerfile', desc: 'container image' },
-                        { name: 'conf/', type: 'dir', expanded: false, id: 'wp-conf-dir', children: [
-                            { name: 'www.conf', type: 'file', id: 'wp-wwwconf', filePath: 'srcs/requirements/wordpress/conf/www.conf', desc: 'PHP-FPM pool :9000' }
-                        ]},
-                        { name: 'tools/', type: 'dir', expanded: false, id: 'wp-tools', children: [
-                            { name: 'wp_setup.sh', type: 'file', id: 'wp-setup', filePath: 'srcs/requirements/wordpress/tools/wp_setup.sh', desc: 'WP init script' }
-                        ]},
-                        { name: 'theme/', type: 'dir', expanded: false, id: 'wp-theme-dir', children: [
-                            { name: 'front-page.php', type: 'file', id: 'wp-frontpage', filePath: 'srcs/requirements/wordpress/theme/front-page.php', desc: 'main template' },
-                            { name: 'style.css', type: 'file', id: 'wp-style', filePath: 'srcs/requirements/wordpress/theme/style.css', desc: 'theme styles' },
-                            { name: 'api-live.php', type: 'file', id: 'wp-api', filePath: 'srcs/requirements/wordpress/theme/api-live.php', desc: 'live data API' },
-                            { name: 'functions.php', type: 'file', id: 'wp-functions', filePath: 'srcs/requirements/wordpress/theme/functions.php', desc: 'theme setup' },
-                            { name: 'index.php', type: 'file', id: 'wp-index', filePath: 'srcs/requirements/wordpress/theme/index.php', desc: 'fallback' }
-                        ]}
-                    ]},
-                    { name: 'mariadb/', type: 'dir', expanded: false, id: 'db-dir', children: [
-                        { name: 'Dockerfile', type: 'file', id: 'db-dockerfile', filePath: 'srcs/requirements/mariadb/Dockerfile', desc: 'container image' },
-                        { name: 'conf/', type: 'dir', expanded: false, id: 'db-conf-dir', children: [
-                            { name: '50-server.cnf', type: 'file', id: 'db-cnf', filePath: 'srcs/requirements/mariadb/conf/50-server.cnf', desc: 'MariaDB config' }
-                        ]},
-                        { name: 'tools/', type: 'dir', expanded: false, id: 'db-tools', children: [
-                            { name: 'init_db.sh', type: 'file', id: 'db-init', filePath: 'srcs/requirements/mariadb/tools/init_db.sh', desc: 'DB init script' }
-                        ]}
-                    ]}
-                ]}
-            ]},
-            { name: 'secrets/', type: 'dir', expanded: false, id: 'secrets-dir', children: [
-                { name: 'db_password.txt', type: 'file', id: 'secret-dbpw', filePath: null, desc: 'database password' },
-                { name: 'db_root_password.txt', type: 'file', id: 'secret-dbrootpw', filePath: null, desc: 'root password' },
-                { name: 'credentials.txt', type: 'file', id: 'secret-creds', filePath: null, desc: 'WP admin credentials' }
-            ]}
-        ]
-    };
-
-    /* ========== DATA FLOW CONNECTIONS ==========
-     * Arrows show realistic data flow direction:
-     *   BUILD: Makefile → compose → Dockerfiles → COPY source files
-     *   CONFIG: .env → compose, secrets → compose → containers
-     *   RUNTIME: nginx → wordpress:9000, wordpress → mariadb:3306
-     *   SECRETS: secret files → mounted into → entrypoint scripts
-     */
-    var CONNECTIONS = [
-        // ── Build pipeline (Makefile triggers compose, compose triggers Dockerfile builds) ──
-        { from: 'makefile',         to: 'docker-compose',   label: 'make up',              color: '#c97764' },
-        { from: 'docker-compose',   to: 'nginx-dockerfile', label: 'build:',               color: '#a89880' },
-        { from: 'docker-compose',   to: 'wp-dockerfile',    label: 'build:',               color: '#a89880' },
-        { from: 'docker-compose',   to: 'db-dockerfile',    label: 'build:',               color: '#a89880' },
-
-        // ── Config flows INTO compose (compose reads these) ──
-        { from: 'env-file',         to: 'docker-compose',   label: 'env_file:',            color: '#8fa07e' },
-        { from: 'secret-dbpw',      to: 'docker-compose',   label: 'secrets:',             color: '#a88a63' },
-        { from: 'secret-dbrootpw',  to: 'docker-compose',   label: 'secrets:',             color: '#a88a63' },
-        { from: 'secret-creds',     to: 'docker-compose',   label: 'secrets:',             color: '#a88a63' },
-
-        // ── Dockerfile COPY (source files flow INTO the image at build time) ──
-        { from: 'nginx-conf',       to: 'nginx-dockerfile', label: 'COPY',                 color: '#a89880' },
-        { from: 'nginx-crt',        to: 'nginx-dockerfile', label: 'COPY',                 color: '#a89880' },
-        { from: 'nginx-key',        to: 'nginx-dockerfile', label: 'COPY',                 color: '#a89880' },
-        { from: 'wp-wwwconf',       to: 'wp-dockerfile',    label: 'COPY',                 color: '#a89880' },
-        { from: 'wp-setup',         to: 'wp-dockerfile',    label: 'COPY',                 color: '#a89880' },
-        { from: 'wp-theme-dir',     to: 'wp-dockerfile',    label: 'COPY theme/',          color: '#a89880' },
-        { from: 'db-cnf',           to: 'db-dockerfile',    label: 'COPY',                 color: '#a89880' },
-        { from: 'db-init',          to: 'db-dockerfile',    label: 'COPY',                 color: '#a89880' },
-
-        // ── Runtime: secrets mounted into containers, read by entrypoints ──
-        { from: 'secret-dbpw',      to: 'wp-setup',         label: '/run/secrets/',        color: '#a88a63' },
-        { from: 'secret-creds',     to: 'wp-setup',         label: '/run/secrets/',        color: '#a88a63' },
-        { from: 'secret-dbrootpw',  to: 'db-init',          label: '/run/secrets/',        color: '#a88a63' },
-        { from: 'secret-dbpw',      to: 'db-init',          label: '/run/secrets/',        color: '#a88a63' },
-
-        // ── Runtime: network traffic between services ──
-        { from: 'nginx-conf',       to: 'wp-wwwconf',       label: 'fastcgi_pass :9000',   color: '#c97764' },
-        { from: 'wp-setup',         to: 'db-init',          label: 'mysql :3306',          color: '#c97764' },
-
-        // ── Runtime: nginx loads SSL certs ──
-        { from: 'nginx-crt',        to: 'nginx-conf',       label: 'ssl_certificate',      color: '#a88a63' },
-        { from: 'nginx-key',        to: 'nginx-conf',       label: 'ssl_certificate_key',  color: '#a88a63' }
-    ];
+    /* ========== DYNAMIC TREE + CONNECTIONS (loaded from API) ========== */
+    var TREE_DATA = null;
+    var CONNECTIONS = [];
 
     /* ========== HELPERS ========== */
     function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
@@ -457,8 +363,22 @@
     };
 
     /* ========== INIT ========== */
-    renderTree(TREE_DATA, treeEl);
-    setTimeout(drawConnections, 100);
+    // Show loading state
+    treeEl.innerHTML = '<div class="graph-detail__loading"><div class="live-spinner"></div>Loading architecture...</div>';
+
+    fetch(apiUrl + '?action=tree')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            TREE_DATA = data.tree;
+            CONNECTIONS = data.connections;
+            treeEl.innerHTML = '';
+            renderTree(TREE_DATA, treeEl);
+            setTimeout(drawConnections, 100);
+        })
+        .catch(function(err) {
+            treeEl.innerHTML = '<div class="graph-detail__loading" style="color:#c97764">'
+                + 'Failed to load architecture: ' + esc(err.message) + '</div>';
+        });
 
     var resizeTimer;
     window.addEventListener('resize', function() {
@@ -475,6 +395,7 @@
     // ---- Expand All / Collapse All ----
     var allExpanded = false;
     window.toggleExpandAll = function() {
+        if (!TREE_DATA) return;
         allExpanded = !allExpanded;
         var dirs = wrapper.querySelectorAll('.filetree-node.filetree-dir');
         var childDivs = wrapper.querySelectorAll('.filetree-children');
@@ -483,9 +404,9 @@
             if (allExpanded) {
                 dir.classList.add('expanded');
             } else {
-                // Keep root and srcs expanded
+                // Keep root, srcs, and requirements expanded
                 var nodeId = dir.getAttribute('data-node-id');
-                if (nodeId === 'root' || nodeId === 'srcs' || nodeId === 'requirements') {
+                if (nodeId === 'root' || nodeId === 'srcs' || nodeId === 'srcs-requirements') {
                     dir.classList.add('expanded');
                 } else {
                     dir.classList.remove('expanded');
